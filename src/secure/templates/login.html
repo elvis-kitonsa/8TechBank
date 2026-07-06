@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>8TechBank Secure - Login</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #1a1a2e;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .card {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        width: 380px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .logo h1 {
+        color: #1a7a4a;
+        font-size: 28px;
+      }
+      .logo p {
+        color: #888;
+        font-size: 13px;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0 16px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      label {
+        font-size: 13px;
+        color: #555;
+        font-weight: bold;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #1a7a4a;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #145c38;
+      }
+      .error {
+        background: #ffe0e0;
+        color: #c0392b;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-size: 13px;
+      }
+      .link {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 13px;
+      }
+      .link a {
+        color: #1a7a4a;
+        text-decoration: none;
+      }
+      .secure-badge {
+        background: #e8f8f0;
+        color: #1a7a4a;
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-size: 12px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">
+        <h1>🏦 8TechBank</h1>
+        <p>Secure Online Banking Portal</p>
+      </div>
+      <div class="secure-badge">🔒 Secure Version — All vulnerabilities fixed</div>
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+      <form method="POST" action="/login">
+        <!-- FIX 3: CSRF token embedded in every form -->
+        <!--{{ csrf_token() }} - This line if left causes an error line to be displayed across the login screen -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter username" required maxlength="50" />
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required maxlength="100" />
+        <button type="submit">Login</button>
+      </form>
+      <div class="link">Don't have an account? <a href="/register">Register here</a></div>
+    </div>
+  </body>
+</html>
