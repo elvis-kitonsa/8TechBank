@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>8TechBank - Transfer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+      }
+      nav {
+        background: #0f3460;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      nav h1 {
+        color: white;
+        font-size: 20px;
+      }
+      nav div a {
+        color: #ccc;
+        text-decoration: none;
+        margin-left: 20px;
+        font-size: 14px;
+      }
+      nav div a:hover {
+        color: white;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      .card {
+        background: white;
+        padding: 35px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      }
+      .card h2 {
+        color: #0f3460;
+        margin-bottom: 25px;
+        font-size: 20px;
+      }
+      label {
+        font-size: 13px;
+        color: #555;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 18px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      textarea {
+        height: 80px;
+        resize: vertical;
+      }
+      button {
+        width: 100%;
+        padding: 13px;
+        background: #0f3460;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #16213e;
+      }
+      .error {
+        background: #ffe0e0;
+        color: #c0392b;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 13px;
+      }
+      .success {
+        background: #e0ffe0;
+        color: #1e8449;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 13px;
+      }
+      .back {
+        display: inline-block;
+        margin-top: 15px;
+        color: #0f3460;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .warning {
+        background: #fff8e1;
+        color: #b7770d;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 18px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h1>🏦 8TechBank</h1>
+      <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/transfer">Transfer</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="card">
+        <h2>💸 Fund Transfer</h2>
+        <!-- VULNERABLE: No CSRF token in this form -->
+        <div class="warning">⚠️ Transfer funds between accounts. Double-check account numbers before submitting.</div>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %} {% if success %}
+        <div class="success">{{ success }}</div>
+        {% endif %}
+        <form method="POST" action="/transfer">
+          <!-- NO CSRF TOKEN - VULNERABLE -->
+          <label>Destination Account Number</label>
+          <input type="text" name="to_account" placeholder="e.g. ACC-002" required />
+          <label>Amount (UGX)</label>
+          <input type="number" name="amount" placeholder="Enter amount" min="1" step="0.01" required />
+          <label>Transfer Note</label>
+          <!-- VULNERABLE: note input has no sanitization -->
+          <textarea name="note" placeholder="Enter a note for this transfer (optional)"></textarea>
+          <button type="submit">Send Money</button>
+        </form>
+        <a href="/dashboard" class="back">← Back to Dashboard</a>
+      </div>
+    </div>
+  </body>
+</html>
