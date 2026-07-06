@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>8TechBank Secure - Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+      }
+      nav {
+        background: #1a7a4a;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      nav h1 {
+        color: white;
+        font-size: 20px;
+      }
+      nav div a {
+        color: #ccc;
+        text-decoration: none;
+        margin-left: 20px;
+        font-size: 14px;
+      }
+      nav div a:hover {
+        color: white;
+      }
+      .container {
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 0 20px;
+      }
+      .welcome {
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .cards {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        flex: 1;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      }
+      .card h3 {
+        color: #888;
+        font-size: 13px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .card .amount {
+        font-size: 32px;
+        color: #1a7a4a;
+        font-weight: bold;
+      }
+      .card .sub {
+        font-size: 13px;
+        color: #aaa;
+        margin-top: 5px;
+      }
+      .section {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+      }
+      .section h2 {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #f0f2f5;
+        padding-bottom: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        text-align: left;
+        color: #888;
+        padding: 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 10px 8px;
+        border-bottom: 1px solid #f5f5f5;
+        color: #444;
+      }
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #1a7a4a;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      .search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .search-bar input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      .search-bar button {
+        padding: 10px 20px;
+        background: #1a7a4a;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .empty {
+        color: #aaa;
+        font-size: 14px;
+        text-align: center;
+        padding: 20px;
+      }
+      .secure-badge {
+        background: #e8f8f0;
+        color: #1a7a4a;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h1>🏦 8TechBank <span style="font-size: 13px; color: #90ee90">🔒 Secure</span></h1>
+      <div>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/transfer">Transfer</a>
+        {% if session.get('role') == 'admin' %}
+        <a href="/admin">Admin Panel</a>
+        {% endif %}
+        <a href="/logout">Logout</a>
+      </div>
+    </nav>
+    <div class="container">
+      <p class="welcome">Welcome back, <strong>{{ session['username'] }}</strong> 👋</p>
+      <div class="cards">
+        <div class="card">
+          <h3>Account Balance</h3>
+          <div class="amount">UGX {{ "%.2f"|format(account.balance) if account else "0.00" }}</div>
+          <div class="sub">Account: {{ account.account_number if account else "N/A" }}</div>
+        </div>
+        <div class="card">
+          <h3>Account ID</h3>
+          <div class="amount" style="font-size: 22px">{{ account.id if account else "N/A" }}</div>
+          <div class="sub"><a href="/account/{{ account.id if account else 1 }}" style="color: #1a7a4a">View full details</a></div>
+        </div>
+      </div>
+      <div class="section">
+        <h2>Search Transactions</h2>
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="Search by note or account..." />
+          <button onclick="window.location = '/search?q=' + encodeURIComponent(document.getElementById('searchInput').value)">Search</button>
+        </div>
+      </div>
+      <div class="section">
+        <h2>Recent Transactions</h2>
+        {% if transactions %}
+        <table>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount (UGX)</th>
+            <th>Note</th>
+            <th>Date</th>
+          </tr>
+          {% for tx in transactions %}
+          <tr>
+            <td>{{ tx.from_acct }}</td>
+            <td>{{ tx.to_acct }}</td>
+            <td>{{ "%.2f"|format(tx.amount) }}</td>
+            <!-- FIX 2: {{ tx.note }} without | safe - auto-escaping active -->
+            <td>{{ tx.note }}</td>
+            <td>{{ tx.timestamp }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">No transactions yet.</p>
+        {% endif %}
+      </div>
+      <a href="/transfer" class="btn">Make a Transfer</a>
+    </div>
+  </body>
+</html>
